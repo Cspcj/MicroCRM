@@ -1,0 +1,48 @@
+﻿@model IEnumerable<MicroCRM.Models.ProjectModel>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectLocation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectLocationCity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Region)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectName) 
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectLocation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectLocationCity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Region)
+                </td>
+            </tr>
+            <tr>
+                
+                <td colspan="4">
+                    <p>Project Description:</p>
+                    @Html.DisplayFor(modelItem => item.ProjectDescription)
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>

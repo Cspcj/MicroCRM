@@ -1,0 +1,27 @@
+﻿@model IEnumerable<MicroCRM.Models.TaskModel>
+
+<p>
+@foreach (var item in Model)
+{
+    <div class="p-1">
+        <div class="card col-sm-12">
+            <table>
+                <tbody class="text-lg-left">
+                    <tr>
+                        <td class="text-center col-sm-1"> @Html.DisplayFor(modelItem => item.IsCompleted)</td>
+                        <td class="text-lg-left col-sm-9"> <h6> @Html.DisplayFor(modelItem => item.Text) </h6></td>
+
+
+                        <td class="text-lg-right col-sm-2">
+                            @{
+                                var date = item.DueDate.ToShortDateString();
+                            }
+                            <h6>@date</h6>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+

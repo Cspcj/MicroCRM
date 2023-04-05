@@ -1,0 +1,124 @@
+﻿@model IEnumerable<MicroCRM.Models.ProjectModel>
+@using Microsoft.AspNetCore.Identity
+@using MicroCRM.Service;
+@using MicroCRM.Models;
+@inject UserManager<IdentityUser> _userManager;
+@inject IClientService _clientService;
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    @if (User.IsInRole("Manager") || User.IsInRole("Employee"))
+    {
+        <a asp-action="Create">Create New</a>
+    }
+</p>
+<div class="card">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProjectId)
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProjectName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProjectDescription)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProjectLocation)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProjectLocationCity)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Region)
+                    </th>
+                    <th>
+                        Client
+                    </th>
+                    <th>
+                        Owner
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectId)
+                        </td>
+                        <td>
+                            @if (item.IsArchived == false)
+                            {
+                                <label class="badge text-white bg-success">Actve</label>
+                            }
+                            else
+                            {
+                                <span class="badge text-black bg-warning">Archived</span>
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectDescription)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectLocation)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectLocationCity)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Region)
+                        </td>
+
+                        <td>
+                            @{
+                                var client = await _clientService.GetClientByIdAsync(item.ClientID);
+                                if (client == null)
+                                {
+                                    client = new ClientModel();
+                                }
+                            }
+                            <label>@client.ClientName</label>
+                        </td>
+                        <td>
+                            @{
+                                var user = await _userManager.FindByIdAsync(item.Id.ToString());
+                            }
+                            @if (user != null)
+                            {
+                                <label>  @user.UserName </label>
+                            }
+                        </td>
+                        <td>
+                            @if (User.IsInRole("Manager") || User.IsInRole("Employee"))
+                            {
+                                @Html.ActionLink("Edit", "Edit", new {id=item.ProjectId})
+                            }
+                            @Html.ActionLink("Details", "Details", new { id=item.ProjectId})
+                            @if (User.IsInRole("Manager"))
+                            {
+                                @Html.ActionLink("Delete", "Delete", new { id=item.ProjectId })
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

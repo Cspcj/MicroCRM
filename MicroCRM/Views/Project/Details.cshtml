@@ -1,0 +1,166 @@
+﻿@model MicroCRM.Models.ProjectModel
+@using Microsoft.AspNetCore.Identity
+@using MicroCRM.Service;
+@using MicroCRM.Models;
+@inject UserManager<IdentityUser> _userManager;
+@inject INoteService _notesService;
+@inject IClientService _clientService;
+@inject ITasksService _tasksService;
+
+<div class="card">
+    <div class="card-header">
+        <h1>Project Details</h1>
+    </div>
+    <div class="card-body ">
+        <dl class="row">
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.ProjectId)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.ProjectId)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.ProjectName)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.ProjectName)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.ProjectDescription)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.ProjectDescription)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.ProjectLocation)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.ProjectLocation)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.ProjectLocationCity)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.ProjectLocationCity)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Region)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Region)
+            </dd>
+            <dt class="col-sm-4">
+                Status proiect
+            </dt>
+            <dd class="col-sm-8">
+                @if (Model.IsArchived == false)
+                {
+                    <label class="badge text-white bg-success">Active</label>
+                }
+                else
+                {
+                    <label class="badge text-black bg-warning">Archived</label>
+                }
+            </dd>
+            <dt class="col-sm-4">
+                Nume client:
+            </dt>
+            <dd class="col-sm-8">
+
+                @{
+                    var client = await _clientService.GetClientByIdAsync(Model.ClientID);
+                }
+                <label>@client.ClientName</label>
+
+            </dd>
+            <dt class="col-sm-4">
+                Owner:
+            </dt>
+            <dd class="col-sm-8">
+                @{
+                    var user = await _userManager.FindByIdAsync(Model.Id.ToString());
+                }
+                <label>@user.UserName</label>
+            </dd>
+        </dl>
+    </div>
+    <div class="card-footer"></div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3>Project Details</h3>
+    </div>
+    <div class="row p-1">
+        <div class="col-sm-6">
+            <table class="col-sm-12">
+                <tbody>
+                    <tr>
+                        <td class="col-sm-10 ">
+                            <h4>Notes:</h4>
+                        </td>
+                        <td class="col-sm-2 ">
+                            <div class="text-right">
+                                <a class="btn btn-warning row-cols-sm-4" asp-action="Create" asp-controller="Notes">New note</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr />
+            @{
+                var notes = await _notesService.GetNotesByProjectIdAsync(Model.ProjectId);
+                await Html.RenderPartialAsync("NotesListPartial", notes);
+            }
+        </div>
+        <div class="col-sm-6">
+            <table class="col-sm-12">
+                <tbody>
+                    <tr>
+                        <td class="col-sm-10 ">
+                            <h4>Tasks:</h4>
+                        </td>
+                        <td class="col-sm-2 ">
+                            <div class="text-right">
+                                <a class="btn btn-warning row-cols-sm-3" asp-action="Create" asp-controller="Tasks">New task</a>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr />
+            @{
+                var tasks = await _tasksService.GetTasksByProjectIdAsync(Model.ProjectId);
+                if (tasks == null)
+                {
+                    tasks = new List<TaskModel>();
+                }
+            }
+            <h3>Pending tasks: </h3>
+            @{
+                if (tasks.Any())
+                    await Html.RenderPartialAsync("TaskListPartial", tasks.Where(t => t.IsCompleted == false)
+                    .OrderBy(x => x.DueDate).Reverse().ToList());
+                else
+                    Html.Display("<h3>No tasks to display</h3>");
+            }
+            <h3>Completed tasks: </h3>
+            @{
+                if (tasks.Any())
+                    await Html.RenderPartialAsync("TaskListPartial", tasks.Where(t => t.IsCompleted == true)
+                    .OrderBy(x => x.DateCreated).ToList());
+                else
+                    Html.Display("<h3>No tasks to display</h3>");
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</div>

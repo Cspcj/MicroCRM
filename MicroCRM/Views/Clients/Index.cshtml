@@ -1,0 +1,78 @@
+﻿@model IEnumerable<MicroCRM.Models.ClientModel>
+
+@{
+    ViewData["Title"] = "Client List";
+}
+
+<h1>Clients</h1>
+
+<p>
+    <a asp-action="CreateNewClient">Create New Client</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.ClientID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientCompany)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientEmail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientPhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientAdress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientOtherInformation)
+            </th>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td hidden>
+                @Html.DisplayFor(modelItem => item.ClientID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientCompany)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientEmail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientPhoneNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientAdress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientOtherInformation)
+            </td>
+            <td hidden>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                    @Html.ActionLink("Edit", "Edit", new { id=item.ClientID}) |
+                    @Html.ActionLink("Details", "Details", new { id=item.ClientID}) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.ClientID})
+                    
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

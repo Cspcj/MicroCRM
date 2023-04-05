@@ -1,0 +1,25 @@
+﻿@model IEnumerable<MicroCRM.Models.NoteModel>
+
+@foreach (var item in Model)
+{
+    <div class="p-1">
+        <div class="card">
+            <div class="card-header text-white bg-info mb-3">
+                <div class="row"> 
+                    <div class="col-sm-10">
+                        <h4>@Html.DisplayFor(modelItem => item.Title) </h4>
+                        <h6> Date created: @Html.DisplayFor(modelItem => item.DateCreated) </h6>
+                    </div>
+                    <div class="col-sm-2 text-center">
+                        <a class="btn btn-warning row-cols-sm-3" asp-action="Edit/id=@{item.ProjectId
+}" asp-controller="Notes">Edit</a>
+                    </div>
+                </div>
+            </div>
+            <div class=" card-body">
+                <p>@Html.DisplayFor(modelItem => item.Note)</p>
+            </div>
+            <div class="card-footer text-white bg-info"> </div>
+        </div>
+    </div>
+}   
