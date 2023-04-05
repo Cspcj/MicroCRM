@@ -1,4 +1,9 @@
 ﻿@model IEnumerable<MicroCRM.Models.TaskModel>
+@using MicroCRM.Service;
+@inject IProjectsService _projectsService;
+@using MicroCRM.Models;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> UserManager;
 
 @{
     ViewData["Title"] = "Index";
@@ -10,36 +15,39 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Text)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateCreated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DueDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsCompleted)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
+
+@foreach (var item in Model)
+{
+
+    <div class="p-1">
+        <div class="card">
+            <table>
+                <tbody>
+                    <tr>
+                        @{
+                            var Project = await _projectsService.GetProjectByIdAsync(item.ProjectId);
+                            string ProjectName = (Project != null) ? Project.ProjectName : " - ";
+                            var date = item.DueDate.ToShortDateString();
+                        }
+                        <td class="text-center col-sm-1"> @Html.DisplayFor(modelItem => item.IsCompleted)</td>
+                        <td class="text-lg-left col-sm-7"> <h6> @Html.DisplayFor(modelItem => item.Text) </h6> Project: @ProjectName </td>
+                        <td class="text-lg-right col-sm-1">
+                            @Html.ActionLink((item.IsCompleted) ? "Uncheck" : "Check", "Toggle", "Tasks",new { id=item.TaskId})
+                            @if (User.IsInRole("Manager") || User.IsInRole("Employee"))
+                            {
+                                @Html.ActionLink("Delete", "Delete", "Tasks",new { id=item.TaskId})
+                            }
+                        </td>
+                        <td class="text-lg-right col-sm-1">
+                            <h6>@date</h6>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @*      <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.TaskId)
             </td>
@@ -62,11 +70,10 @@
                 @Html.DisplayFor(modelItem => item.IsCompleted)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new {id=item.TaskId}) |
-                    @Html.ActionLink("Details", "Details", new {id=item.TaskId}) |
+                @Html.ActionLink("Toggle status", "Edit", new {id=item.TaskId}) |
                     @Html.ActionLink("Delete", "Delete", new {id=item.TaskId})
             </td>
-        </tr>
+        </tr>*@
 }
     </tbody>
 </table>

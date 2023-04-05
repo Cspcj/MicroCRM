@@ -50,5 +50,14 @@ namespace MicroCRM.Service
         {
             return await _tasksRepository.DeleteTaskAsync(id);
         }
+
+        public async Task ToggleTask(TaskModel task)
+        {
+            if (task != null)
+            {
+                task.IsCompleted = !task.IsCompleted;
+                await _tasksRepository.UpdateTaskAsync(task);
+            }
+        }
     }
 }

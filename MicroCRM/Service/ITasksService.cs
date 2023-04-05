@@ -14,6 +14,6 @@ namespace MicroCRM.Service
         Task CreateTaskAsync(TaskModel task);
         Task<TaskModel> UpdateTaskAsync(TaskModel task);
         Task<TaskModel> DeleteTaskAsync(Guid id);
-            
+        Task ToggleTask(TaskModel task);
     }
 }

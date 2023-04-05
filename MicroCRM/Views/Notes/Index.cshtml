@@ -14,7 +14,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.NoteId)
+                Record. no.
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Title)
@@ -32,13 +32,15 @@
         </tr>
     </thead>
     <tbody>
+@{var counter = 1;}
+
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.NoteId)
+                   @counter
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+                    @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Note)
@@ -58,6 +60,7 @@
                     }
             </td>
         </tr>
+        counter++;
 }
     </tbody>
 </table>

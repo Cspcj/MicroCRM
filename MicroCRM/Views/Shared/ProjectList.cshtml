@@ -22,8 +22,8 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProjectName) 
+                <td class=" text-white bg-info ">
+                    <h4>@Html.DisplayFor(modelItem => item.ProjectName) </h4>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ProjectLocation)

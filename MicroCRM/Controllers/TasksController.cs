@@ -90,5 +90,35 @@ namespace MicroCRM.Controllers
             return View("Create", task);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Toggle(Guid id)
+        {
+            var task = await _tasksService.GetTaskByIdAsync(id);
+            await _tasksService.ToggleTask(task);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> DeleteAsync(Guid id) 
+        { 
+            var task = await _tasksService.GetTaskByIdAsync(id);
+            var userName = await _userManager.GetUserNameAsync(await _userManager.FindByIdAsync(task.UserId.ToString()));
+            ViewBag.UserName = userName;
+            return View("Delete", task);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id, IFormCollection collection)
+        {
+            var task = new TaskModel();
+            if (ModelState.IsValid)
+            {
+                await TryUpdateModelAsync(task);
+                await _tasksService.DeleteTaskAsync(id);
+            }
+            return RedirectToAction("Index");
+        }
+
     }
 }

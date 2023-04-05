@@ -62,7 +62,13 @@ namespace MicroCRM.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var projects = await _projectService.GetProjectsAsync();
+
+            IdentityUser u = await _userManager.GetUserAsync(User);
+            var clients = await _clientService.GetClientsAsync();
+            var client = clients.FirstOrDefault(x => x.ClientEmail == u.Email);
+
+            var projects = new List<ProjectModel>();
+            projects = ((User.IsInRole("Manager")) ? await _projectService.GetProjectsAsync() : await _projectService.GetProjectsByClientIdAsync(client.ClientID)).ToList<ProjectModel>();
             ViewBag.Projects = projects;
             return View("Create");
 

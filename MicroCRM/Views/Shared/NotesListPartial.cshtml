@@ -11,8 +11,7 @@
                         <h6> Date created: @Html.DisplayFor(modelItem => item.DateCreated) </h6>
                     </div>
                     <div class="col-sm-2 text-center">
-                        <a class="btn btn-warning row-cols-sm-3" asp-action="Edit/id=@{item.ProjectId
-}" asp-controller="Notes">Edit</a>
+                        <a class="btn btn-warning row-cols-sm-3" asp-action="Edit/id=item.ProjectId" asp-controller="Notes">Edit</a>
                     </div>
                 </div>
             </div>
