@@ -39,7 +39,7 @@ namespace MicroCRM.Repositories
 
         public async Task<IEnumerable<ProjectModel>> GetProjectsByClientIdAsync(Guid id)
         {
-            var projectList = await _context.Projects.Where(x => x.ClientID == id).ToListAsync();
+            var projectList = await _context.Projects.Where(x => x.Id == id).ToListAsync();
            return projectList; 
         }
 

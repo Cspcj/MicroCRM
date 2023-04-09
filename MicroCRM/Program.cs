@@ -29,14 +29,6 @@ namespace MicroCRM
             builder.Services.ConfigureApplicationCookie(options => options.AccessDeniedPath = "/stop/index");
 
 
-
-            //add data related services to the context - DataContext
-            //connectionString = builder.Configuration.GetConnectionString("DefaultDataConnection") ?? throw new InvalidOperationException("Connection string 'DefaultDataConnection' not found.");
-            //builder.Services.AddDbContext<DataContext>(options =>
-            //               options.UseSqlServer(connectionString));
-
-            //DefaultDataConnection
-
             builder.Services.AddControllersWithViews();
             builder.Services.AddLogging();
 

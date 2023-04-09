@@ -1,8 +1,22 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <img src="~/src/logo.jpg" alt="Logo" />
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <p class="lead">@User.Identity.Name!</p>
+    }
+    else
+    {
+        <p class="lead">Please <a asp-area="Identity" asp-page="/Account/Login">Login</a> in order to continue.</p>
+    }
 </div>

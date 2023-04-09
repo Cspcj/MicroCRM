@@ -24,35 +24,57 @@ namespace MicroCRM.Controllers
         public async Task<IActionResult> Index()
         {
 
-            if (User.IsInRole("Manager") || User.IsInRole("Employee"))
+            if (User.IsInRole("Manager"))
             {
                 var notes = await _noteService.GetNotesAsync();
                 return View("Index", notes);
             }
-            else
+            else if (User.IsInRole("Employee")) 
             {
                 IdentityUser u = await _userManager.GetUserAsync(User);
+
+                var projects = await _projectService.GetProjectsAsync();
+                var result = new  List<NoteModel>();
+                var notes = await _noteService.GetNotesAsync();
+
+                foreach (var proj in projects)
+                {
+                    if(proj.Id == Guid.Parse(u.Id))
+                    {
+                        object value = notes.Where(x => x.ProjectId == proj.ProjectId).ToList();
+                        result.AddRange((List<NoteModel>)value);
+                    }
+                }
+                return View("Index", result);
+            }
+            else
+            {
+                // get current user 
+                IdentityUser u = await _userManager.GetUserAsync(User);
+                // get client coresponding to current user
                 var clients = await _clientService.GetClientsAsync();
                 var client = clients.FirstOrDefault(x => x.ClientEmail == u.Email);
-                var projects = await _projectService.GetProjectsByClientIdAsync(client.ClientID);
+                //get all projects for current client
+                var projects = await _projectService.GetProjectsAsync();
 
                 List<NoteModel> notes = new List<NoteModel>();
 
                 foreach (var project in projects)
                 {
-                    notes.AddRange(await _noteService.GetNotesByProjectIdAsync(project.ProjectId));
+                    List<NoteModel> local = new List<NoteModel>();    
+                    if (project.ClientID == client.ClientID)
+                    {
+                        local = (List<NoteModel>) await _noteService.GetNotesByProjectIdAsync(project.ProjectId);
+                    }
+                    notes.AddRange(local);
                 }
 
                 return View("Index", notes);
             }
             return View("Index", "Home");
         }
-            //    return View("Index", notes);
-            //}
 
-
-
-            [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
             var note = await _noteService.GetNoteAsync(id);
@@ -68,7 +90,24 @@ namespace MicroCRM.Controllers
             var client = clients.FirstOrDefault(x => x.ClientEmail == u.Email);
 
             var projects = new List<ProjectModel>();
-            projects = ((User.IsInRole("Manager")) ? await _projectService.GetProjectsAsync() : await _projectService.GetProjectsByClientIdAsync(client.ClientID)).ToList<ProjectModel>();
+            if (User.IsInRole("Manager"))
+            {
+                projects = (List<ProjectModel>) await _projectService.GetProjectsAsync();
+            }
+            else if (User.IsInRole("Employee"))
+            {
+                var local = (List<ProjectModel>)await _projectService.GetProjectsAsync();
+                projects = local.Where(x => x.Id == Guid.Parse(u.Id)).ToList<ProjectModel>();
+            }
+            else
+            {
+                var local = await _projectService.GetProjectsAsync();
+                projects = local.Where(x => x.ClientID == client.ClientID).ToList<ProjectModel>();
+            }
+            //{
+            //    var allProjects = await _projectService.GetProjectsAsync();
+            //}
+            //projects = ((User.IsInRole("Manager")) ? await _projectService.GetProjectsAsync() : await _projectService.GetProjectsByClientIdAsync(client.ClientID)).ToList<ProjectModel>();
             ViewBag.Projects = projects;
             return View("Create");
 

@@ -25,9 +25,17 @@ namespace MicroCRM.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("Manager") || User.IsInRole("Employee"))
+            if (User.IsInRole("Manager"))
             {
                 var result = await _projectService.GetProjectsAsync();
+                return View("Index", result);
+            }
+            else if (User.IsInRole("Employee"))
+            {
+                IdentityUser u = await _userManager.GetUserAsync(User);
+
+                var results = await _projectService.GetProjectsAsync();
+                var result = results.Where(x => x.Id == Guid.Parse(u.Id));
                 return View("Index", result);
             }
             else
@@ -35,14 +43,24 @@ namespace MicroCRM.Controllers
                 IdentityUser u = await _userManager.GetUserAsync(User);
                 var clients = await _clientService.GetClientsAsync();
                 var client = clients.FirstOrDefault(x => x.ClientEmail == u.Email);
+                var projects = await _projectService.GetProjectsAsync();
+
+                List<ProjectModel> result = new List<ProjectModel>();
+
+                foreach (var item in projects)
+                {
+                    if (item.ClientID == client.ClientID)
+                    {
+                        result.Add(item);
+                    }
+                }
                 
-                var result = await _projectService.GetProjectsByClientIdAsync(client.ClientID);
                 return View("Index", result);
             }
-            return View("Index","Home");   
+            return View("Index", "Home");
         }
 
-        [Authorize(Roles ="Employee,Manager")]
+        [Authorize(Roles = "Employee,Manager")]
         [HttpGet]
         public async Task<IActionResult> Create()
         {

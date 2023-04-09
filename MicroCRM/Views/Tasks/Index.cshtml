@@ -32,9 +32,9 @@
                         <td class="text-center col-sm-1"> @Html.DisplayFor(modelItem => item.IsCompleted)</td>
                         <td class="text-lg-left col-sm-7"> <h6> @Html.DisplayFor(modelItem => item.Text) </h6> Project: @ProjectName </td>
                         <td class="text-lg-right col-sm-1">
-                            @Html.ActionLink((item.IsCompleted) ? "Uncheck" : "Check", "Toggle", "Tasks",new { id=item.TaskId})
                             @if (User.IsInRole("Manager") || User.IsInRole("Employee"))
                             {
+                                @Html.ActionLink((item.IsCompleted) ? "Uncheck" : "Check", "Toggle", "Tasks",new { id=item.TaskId})
                                 @Html.ActionLink("Delete", "Delete", "Tasks",new { id=item.TaskId})
                             }
                         </td>

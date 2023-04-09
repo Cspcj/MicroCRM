@@ -37,19 +37,52 @@ namespace MicroCRM.Controllers
                 var tasks = await _tasksService.GetTasksAsync();
                 return View("Index", tasks);
             }
-            else if (User.IsInRole("Employee") || User.IsInRole("Client"))
+            else if (User.IsInRole("Employee"))
             {
                 IdentityUser user = await _userManager.GetUserAsync(User);
+                // get coresponding to current user
 
-                var tasks = await _tasksService.GetTasksByUserIdAsync(Guid.Parse(user.Id));
+                var projects = await _projectsService.GetProjectsAsync();
+                var taskList = await _tasksService.GetTasksAsync();
+                var tasks = new List<TaskModel>();
+                foreach (var item in projects)
+                {
+                    if (item.Id == Guid.Parse(user.Id))
+                    {
+                        var local_tasks = taskList.Where(x => x.ProjectId == item.ProjectId).ToList<TaskModel>();
+                        tasks.AddRange(local_tasks);
+                    }
+                }
+
+
+                //var tasks = await _tasksService.GetTasksByUserIdAsync(Guid.Parse(user.Id));
                 return View("Index", tasks);
             }
             else
             {
-                return View("Index", new List<TaskModel>());
+                IdentityUser user = await _userManager.GetUserAsync(User);
+                // get coresponding to current user
+                var clients = await _clientService.GetClientsAsync();
+                var client = clients.FirstOrDefault(x => x.ClientEmail == user.Email);
+
+                var projects = await _projectsService.GetProjectsAsync();
+                var tasks = new List<TaskModel>();
+                foreach (var item in projects)
+                {
+                    if (item.ClientID == client.ClientID)
+                    {
+                        var local_tasks = await _tasksService.GetTasksByProjectIdAsync(item.ProjectId);
+                        tasks.AddRange(local_tasks);    
+                    }
+                }
+                return View("Index", tasks);
             }
             return View("Index", "Home");
         }
+
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -59,22 +92,28 @@ namespace MicroCRM.Controllers
             var client = clients.FirstOrDefault(x => x.ClientEmail == u.Email);
 
             var projects = new List<ProjectModel>();
-            projects = ((User.IsInRole("Manager"))? await _projectsService.GetProjectsAsync() : await _projectsService.GetProjectsByClientIdAsync(client.ClientID)).ToList<ProjectModel>();
-            projects.Add(new ProjectModel()
+            
+            if (User.IsInRole("Manager"))
             {
-                ProjectId = -1,
-                ProjectName = "Unassigned",
-                ProjectDescription = "Unassigned",
-                ClientID = Guid.Empty,
-                IsArchived = true,
-                IsDeleted = false,
-                ProjectLocation = "Unassigned",
-                ProjectLocationCity = "Unassigned",
-                Id = Guid.Parse(u.Id),
-                Region = "Unassigned"
-            });
+                projects = (List<ProjectModel>)await _projectsService.GetProjectsAsync();
+            }
+            else if (User.IsInRole("Employee"))
+            {
+                var local = (List<ProjectModel>)await _projectsService.GetProjectsAsync();
+                projects = local.Where(x => x.Id == Guid.Parse(u.Id)).ToList<ProjectModel>();
+            }
+            else
+            {
+                var local = await _projectsService.GetProjectsAsync();
+                projects = local.Where(x => x.ClientID == client.ClientID).ToList<ProjectModel>();
+            }
+            //{
+            //    var allProjects = await _projectService.GetProjectsAsync();
+            //}
+            //projects = ((User.IsInRole("Manager")) ? await _projectService.GetProjectsAsync() : await _projectService.GetProjectsByClientIdAsync(client.ClientID)).ToList<ProjectModel>();
             ViewBag.Projects = projects;
             return View("Create");
+
         }
 
         [HttpPost]
